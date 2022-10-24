@@ -20,8 +20,8 @@
                             <div class="col-xl-12">
                                 <div class="auth-form">
                                     <h4 class="text-center mb-4 mt-2" style="color: #fff;">Digite o username do GitHub</h4>
-                                    <form method="GET" action="{{ route('index') }}">
-                                        {{ csrf_field() }}
+                                    <form method="GET" action="{{ route('index') }}" onsubmit="document.getElementById('submit_button').disabled = true;">
+                                        <input type="hidden" name="first_load" value="1">
                                         <div class="form-group mb-5">
                                             <input type="text" name="owner" class="form-control" value="{{ old('owner') }}">
                                         </div>
@@ -35,7 +35,7 @@
                                             </div>
                                         @endif
                                         <div class="text-center">
-                                            <button type="submit" class="btn btn-primary btn-block" style="background-color: #77D62D; font-weight: 500; border: none;">Acessar</button>
+                                            <button type="submit" id="submit_button" class="btn btn-primary btn-block" style="background-color: #77D62D; font-weight: 500; border: none;">Acessar</button>
                                         </div>
                                     </form>
                                 </div>

@@ -16,6 +16,7 @@ class Repository extends Model
         'url',
         'is_archived',
         'is_fork',
+        'is_disabled',
         'visibility',
         'language',
         'default_branch',

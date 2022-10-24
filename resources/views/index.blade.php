@@ -1,63 +1,112 @@
-<!DOCTYPE html>
-<html lang="en" class="h-100">
+@extends('layouts.default')
 
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>GitHub API</title>
-    <link href="{{ asset('theme-assets/css/style.css') }}" rel="stylesheet">
+@section('content')
+    <style>
+        tr:nth-child(even) {background-color: #f2f2f2;}
 
-</head>
-<style>
-    .form {
-        padding: 50px 50px;
-    }
-    .container-full {
-        width: 100%;
-        padding-right: 15px;
-        padding-left: 15px;
-        margin-right: auto;
-        margin-left: auto;
-    }
-</style>
-
-<body class="h-100">
-    <div class="authincation h-100">
-        <div class="container-full h-100">
-            <div class="row justify-content-center h-100 align-items-center  ml-5 mr-5">
-                <div class="authincation-content" style="border-radius: 15px;">
-                    <div class="row no-gutters">
-                        <div class="col-xl-12">
-                            <div class="form">
+        th, td {
+            padding: 15px;
+            text-align: center;
+        }
+    </style>
+    <div class="mt-5">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form class="row" method="GET" action="{{ route('index') }}">
+                                <input type="hidden" name="owner" value="{{ $owner }}">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label class="mb-1">Procurar</label>
+                                        <input type="text" name="search" class="form-control" value="{{$filter['search']}}">
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="mb-1">Arquivado?</label>
+                                        <select class="form-control" name="archived">
+                                            <option value="no_filter" {{ $filter['archived'] == 'no_filter' ? 'selected' : '' }}>Sem filtro</option>
+                                            <option value="yes" {{ $filter['archived'] == 'yes' ? 'selected' : '' }}>Sim</option>
+                                            <option value="no" {{ $filter['archived'] == 'no' ? 'selected' : '' }}>Não</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="mb-1">Fork?</label>
+                                        <select class="form-control" name="fork">
+                                            <option value="no_filter" {{ $filter['fork'] == 'no_filter' ? 'selected' : '' }}>Sem filtro</option>
+                                            <option value="yes" {{ $filter['fork'] == 'yes' ? 'selected' : '' }}>Sim</option>
+                                            <option value="no" {{ $filter['fork'] == 'no' ? 'selected' : '' }}>Não</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="mb-1">Desabilitado?</label>
+                                        <select class="form-control" name="disabled">
+                                            <option value="no_filter" {{ $filter['disabled'] == 'no_filter' ? 'selected' : '' }}>Sem filtro</option>
+                                            <option value="yes" {{ $filter['disabled'] == 'yes' ? 'selected' : '' }}>Sim</option>
+                                            <option value="no" {{ $filter['disabled'] == 'no' ? 'selected' : '' }}>Não</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn btn-success" style="width: 100%; margin-top: 27px; border-radius: 20px;">Filtrar</button>
+                                </div>
+                                <div class="col-md-6">
+                                    <a href="{{ route('index') }}?owner={{$owner}}" class="btn btn-info" style="width: 100%; margin-top: 27px; border-radius: 20px;">Limpar filtro</a>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-xl-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="text-right overflow-auto">
+                                <form style="margin-left: 5px;">
+                                    Ordenação:
+                                    <select id="order">
+                                        <option value="1" @if($order == 1) selected @endif >Nome ordem alfabética</option>
+                                        <option value="2" @if($order == 2) selected @endif >Nome ordem alfabética inversa</option>
+                                        <option value="3" @if($order == 3) selected @endif >Último commit ordem cronológica</option>
+                                        <option value="4" @if($order == 4) selected @endif >Último commit ordem cronológica inversa</option>
+                                    </select>
+                                </form>
                                 <table class="w-100">
                                     <tr class="mb-5">
-                                        <th class="text-white">Repositório</th>
-                                        <th class="text-white">Descrição</th>
-                                        <th class="text-white">URL</th>
-                                        <th class="text-white">Está arquivado?</th>
-                                        <th class="text-white">É um fork?</th>
-                                        <th class="text-white">Visibilidade</th>
-                                        <th class="text-white">Linguagem</th>
-                                        <th class="text-white">Branch Principal</th>
-                                        <th class="text-white">Commits</th>
-                                        <th class="text-white">Último Commit</th>
+                                        <th class="font-weight-bold">Repositório</th>
+                                        <th class="font-weight-bold">Descrição</th>
+                                        <th class="font-weight-bold">URL</th>
+                                        <th class="font-weight-bold">Arquivado?</th>
+                                        <th class="font-weight-bold">Fork?</th>
+                                        <th class="font-weight-bold">Visibilidade</th>
+                                        <th class="font-weight-bold">Linguagem</th>
+                                        <th class="font-weight-bold">Branch Principal</th>
+                                        <th class="font-weight-bold">Commits</th>
+                                        <th class="font-weight-bold">Último Commit</th>
                                     </tr>
                                     @foreach($repos as $repo)
-                                    <tr>
-                                        <td>{{ $repo->name }}</td>
-                                        <td>{{ $repo->description }}</td>
-                                        <td>{{ $repo->url }}</td>
-                                        <td>{{ $repo->is_archived }}</td>
-                                        <td>{{ $repo->is_fork }}</td>
-                                        <td>{{ $repo->visibility }}</td>
-                                        <td>{{ $repo->language }}</td>
-                                        <td>{{ $repo->default_branch }}</td>
-                                        <td>{{ $repo->number_of_commits }}</td>
-                                        <td>{{ $repo->last_commit }}</td>
-                                    </tr>
+                                        <tr>
+                                            <td>{{ $repo->name }}</td>
+                                            <td>{{ str()->limit($repo->description, 50) }}</td>
+                                            <td>{{ $repo->url }}</td>
+                                            <td>{{ $repo->is_archived }}</td>
+                                            <td>{{ $repo->is_fork }}</td>
+                                            <td>{{ $repo->visibility }}</td>
+                                            <td>{{ $repo->language }}</td>
+                                            <td>{{ $repo->default_branch }}</td>
+                                            <td>{{ $repo->number_of_commits }}</td>
+                                            <td>{{ $repo->last_commit }}</td>
+                                        </tr>
                                     @endforeach
                                 </table>
+                                <div class="float-right mt-3">
+                                    {{ $repos->appends(request()->all())->render("pagination::bootstrap-4") }}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -66,16 +115,9 @@
         </div>
     </div>
 
-
-    <!--**********************************
-        Scripts
-    ***********************************-->
-    <!-- Required vendors -->
-    <script src="{{ asset('theme-assets/vendor/global/global.min.js') }}"></script>
-    <script src="{{ asset('theme-assets/vendor/bootstrap-select/dist/js/bootstrap-select.min.js') }}"></script>
-    <script src="{{ asset('theme-assets/js/custom.min.js') }}"></script>
-    <script src="{{ asset('theme-assets/js/deznav-init.js') }}"></script>
-
-</body>
-
-</html>
+    <script>
+        document.getElementById('order').onchange = function () {
+            window.location = "{!! $repos->url(1) !!}&order=" + this.value;
+        };
+    </script>
+@endsection

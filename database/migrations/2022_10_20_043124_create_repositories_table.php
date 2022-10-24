@@ -21,11 +21,12 @@ return new class extends Migration
             $table->string('url');
             $table->boolean('is_archived');
             $table->boolean('is_fork');
+            $table->boolean('is_disabled');
             $table->string('visibility');
-            $table->string('language');
-            $table->string('default_branch');
-            $table->date('last_commit');
-            $table->integer('number_of_commits');
+            $table->string('language')->nullable();
+            $table->string('default_branch')->nullable();
+            $table->date('last_commit')->nullable();
+            $table->integer('number_of_commits')->nullable();
             $table->timestamps();
         });
     }
